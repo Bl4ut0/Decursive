@@ -130,7 +130,7 @@ jobs:
               "forever": "16001",
           }
           for flavor, interface in interfaces.items():
-              matches = list(Path(".release").glob("*-" + flavor + ".zip"))
+              matches = [p for p in Path(".release").glob("*-" + flavor + ".zip") if "-nolib" not in p.name]
               assert len(matches) == 1, (flavor, matches)
               with ZipFile(matches[0]) as archive:
                   toc = archive.read("Decursive/Decursive.toc").decode("utf-8-sig")
@@ -141,6 +141,7 @@ jobs:
 
       - name: Upload all-client test packages
         if: >-
+          always() &&
           (github.ref_type == 'branch' || github.event_name == 'pull_request') &&
           !contains(env.RELEASE_COMMIT_MESSAGE, '#skipforever') &&
           !contains(env.RELEASE_COMMIT_MESSAGE, '#skipall')
