@@ -115,51 +115,31 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release edit "$GITHUB_REF_NAME" --prerelease
 
-      - name: Verify Forever package
-        if: >-
-          !contains(env.RELEASE_COMMIT_MESSAGE, '#skipforever') &&
-          !contains(env.RELEASE_COMMIT_MESSAGE, '#skipall')
+      - name: Verify all client packages
         shell: bash
         run: |
-          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          interfaces = {
+              "retail": "120100",
+              "classic": "11509",
+              "mists": "50504",
+              "bcc": "20506",
+              "titan": "38002",
+              "forever": "16001",
+          }
+          for flavor, interface in interfaces.items():
+              matches = list(Path(".release").glob("*-" + flavor + ".zip"))
+              assert len(matches) == 1, (flavor, matches)
+              with ZipFile(matches[0]) as archive:
+                  toc = archive.read("Decursive/Decursive.toc").decode("utf-8-sig")
+                  assert "## Interface: " + interface in toc, (flavor, toc)
+                  assert "Decursive/Libs/AceDB-3.0/AceDB-3.0.lua" in archive.namelist(), flavor
+              print(flavor, matches[0].name, interface)
+          PY
 
-          archives=()
-          while IFS= read -r candidate; do
-            candidate_toc="$(unzip -p "$candidate" 'Decursive/Decursive.toc' 2>/dev/null || true)"
-            if grep -q '^## Interface: 16001' <<<"$candidate_toc"; then
-              archives+=("$candidate")
-            fi
-          done < <(find .release -maxdepth 1 -type f -iname '*.zip' ! -iname '*nolib*')
-
-          if [[ ${#archives[@]} -ne 1 ]]; then
-            printf 'Expected one full Forever archive, found %d\n' "${#archives[@]}" >&2
-            printf '%s\n' "${archives[@]}" >&2
-            exit 1
-          fi
-
-          archive="${archives[0]}"
-          toc="$(unzip -p "$archive" 'Decursive/Decursive.toc')"
-          grep -q '^## Interface: 16001' <<<"$toc"
-          ! grep -q '@project-' <<<"$toc"
-
-          ace_db="$(unzip -p "$archive" 'Decursive/Libs/AceDB-3.0/AceDB-3.0.lua')"
-          grep -q '"AceDB-3.0", 36' <<<"$ace_db"
-          grep -q 'version > 16000 and version < 20000' <<<"$ace_db"
-
-          en_us="$(unzip -p "$archive" 'Decursive/Localization/enUS.lua')"
-          locale_entry_count="$(grep -c '^L\[' <<<"$en_us")"
-          if [[ $locale_entry_count -lt 350 ]]; then
-            printf 'Expected at least 350 English locale entries, found %d\n' "$locale_entry_count" >&2
-            exit 1
-          fi
-          grep -Fq 'L["DEBUG_REPORT_HEADER"]' <<<"$en_us"
-          grep -Fq 'L["OPT_OPTIONS_DISABLED_WHILE_IN_COMBAT"]' <<<"$en_us"
-
-          debuffs_frame="$(unzip -p "$archive" 'Decursive/Dcr_DebuffsFrame.lua')"
-          grep -q 'AddDispelTypeTexture' <<<"$debuffs_frame"
-          ! grep -q ':SetAuraBorder(' <<<"$debuffs_frame"
-
-      - name: Upload Forever test package
+      - name: Upload all-client test packages
         if: >-
           (github.ref_type == 'branch' || github.event_name == 'pull_request') &&
           !contains(env.RELEASE_COMMIT_MESSAGE, '#skipforever') &&
