@@ -41,10 +41,10 @@ if not T._LoadedFiles or not T._LoadedFiles["Dcr_DebuffsFrame.xml"] or not T._Lo
     DecursiveInstallCorrupted = true;
     return;
 end
-T._LoadedFiles["Dcr_12_1_Sounds.lua"] = not DC.MN and "@project-version@";
+T._LoadedFiles["Dcr_12_1_Sounds.lua"] = "@project-version@";
 
 DC.AURA_SOUND_REGISTRATION = not not (
-    DC.TWELVE_ONE
+    DC.RESTRICTED_AURAS
     and C_UnitAuras
     and type(C_UnitAuras.AddAuraSound) == "function"
     and type(C_UnitAuras.RemoveAuraSound) == "function"
@@ -58,8 +58,7 @@ end
 
 
 if not DC.AURA_SOUND_REGISTRATION then
-    -- Other client paths still call these methods while handling saved sound
-    -- settings. Keep those paths safe when aura-sound registration is absent.
+    -- Sound settings remain callable on clients without this optional API.
     function D:AddKnownSpellIDToSoundReg() end
     function D:RemoveKnownSpellIDFromSoundReg() end
     return
@@ -97,9 +96,6 @@ local SPELLS_BY_TYPE = {
         1303490, 372796, 1291399,
     },
 }
-
-
--- TODO: augment those tables with debuff history and save those spells in user's profile
 
 
 local allSpells = {}

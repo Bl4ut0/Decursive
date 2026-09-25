@@ -18,7 +18,7 @@ RC3 includes the upstream 12.1 restricted-aura fixes, the raid-icon clearing
 fix, and debuff sound discovery during aura scanning. The sound registration
 path checks that both optional aura-sound APIs are available. Classic-era
 client flavors continue through the legacy scanner and do not call those APIs.
-The package workflow now validates pull requests and reserves uploads for tags.
+The upstream workflow builds all six client flavors on master and version tags by default.
 
 ## Dependency status
 
@@ -28,8 +28,8 @@ rewrites the packaged TOC to interface `16001`.
 
 AceDB-3.0 revision 36 or newer is required on Forever. That revision contains
 the upstream Forever realm-rule fix and a fallback for beta clients that do not
-return a conventional region. CI verifies both the embedded revision and the
-relevant Forever code before publishing an archive.
+return a conventional region. Release archives should be checked for that
+embedded revision and the Forever realm handling before deployment.
 
 ## Current testing scope
 

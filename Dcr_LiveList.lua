@@ -369,6 +369,9 @@ end -- }}}
 
 
 function LiveList:GetDebuff(UnitID) -- {{{
+
+    if D:AurasRestricted() then return false end
+
     --  (note that this function is only called for the mouseover and target if the MUFs are active)
 
     if (UnitID == "target" or UnitID == "mouseover") and (not UnitIsFriend(UnitID, "player") or not UnitExists(UnitID)) then
@@ -399,6 +402,9 @@ function LiveList:GetDebuff(UnitID) -- {{{
 end -- }}}
 
 function LiveList:DelayedGetDebuff(UnitID, o_auraUpdateInfo) -- {{{
+
+    if D:AurasRestricted() then return end
+
     if not D:DelayedCallExixts("Dcr_GetDebuff"..UnitID) then
         D.DebuffUpdateRequest = D.DebuffUpdateRequest + 1;
         D:Debug("LiveList: GetDebuff scheduled for, ", UnitID);

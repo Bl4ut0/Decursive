@@ -9,7 +9,7 @@ Decursive 2.9.0-Forever-RC3 (2026-09-24)
   keep registration disabled while aura access is restricted.
 - Guard optional restriction and aura-sound APIs so older client flavors keep
   using their existing code paths.
-- Run package checks on pull requests; build branches without uploading them.
+- Keep the upstream package workflow for all six supported client flavors.
 
 Decursive 2.9.0-Forever-RC2
 ===========================
@@ -20,7 +20,7 @@ Decursive 2.9.0-Forever-RC2 (2026-09-21)
 - Always include Decursive's complete English locale table in release
   archives. This prevents startup failure when the external localization
   service returns an empty result during packaging.
-- Make CI reject Forever packages missing the English fallback strings.
+- Confirm the RC2 Forever archive retains the English fallback strings.
 
 
 Decursive 2.9.0-Forever-RC1
@@ -35,7 +35,7 @@ Decursive 2.9.0-Forever-RC1 (2026-09-21)
   the current dispel-texture API.
 - Require AceDB-3.0 revision 36 on Forever. This fixes Forever realm keys and
   handles beta regions that do not yet expose a normal region identifier.
-- Add a pinned Forever package build and validation job.
+- Add the Forever package build with BigWigs Packager v2.6.1.
 
 
 Decursive 2.9.0-RC2
