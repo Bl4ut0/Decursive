@@ -54,6 +54,8 @@ jobs:
           !contains(env.RELEASE_COMMIT_MESSAGE, '#skipretail') &&
           !contains(env.RELEASE_COMMIT_MESSAGE, '#skipall')
         uses: BigWigsMods/packager@v2.6.1
+        with:
+          args: -n "{package-name}-{project-version}-retail{nolib}"
 
       - name: Package classic
         if: >-
@@ -105,7 +107,7 @@ jobs:
           !contains(env.RELEASE_COMMIT_MESSAGE, '#skipall')
         uses: BigWigsMods/packager@v2.6.1
         with:
-          args: -g forever
+          args: -g forever -n "{package-name}-{project-version}-forever{nolib}"
 
       - name: Mark release candidates as prereleases
         if: github.ref_type == 'tag' && contains(github.ref_name, '-RC')
@@ -164,7 +166,7 @@ jobs:
           !contains(env.RELEASE_COMMIT_MESSAGE, '#skipall')
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: Decursive-Forever-${{ github.sha }}
+          name: Decursive-AllClients-${{ github.sha }}
           path: .release/*.zip
           include-hidden-files: true
           if-no-files-found: error
